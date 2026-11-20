@@ -28,10 +28,34 @@ app.get('/api/health', (req, res) => {
 // RAG query input validation endpoint (accepts 1 to 500 characters inclusive)
 app.post('/api/validate-query', (req, res) => {
   const { query } = req.body || {};
-  if (typeof query !== 'string' || query.trim().length < 1 || query.trim().length > 499) {
-    return res.status(400).json({ valid: false, message: 'Invalid query' });
+
+  if (typeof query !== 'string') {
+    return res.status(400).json({
+      valid: false,
+      message: 'Query is required and must be a string'
+    });
   }
-  return res.status(200).json({ valid: true, query: query.trim() });
+
+  const trimmedQuery = query.trim();
+
+  if (trimmedQuery.length < 1) {
+    return res.status(400).json({
+      valid: false,
+      message: 'Query must contain at least 1 character'
+    });
+  }
+
+  if (trimmedQuery.length > 500) {
+    return res.status(400).json({
+      valid: false,
+      message: 'Query must not exceed 500 characters'
+    });
+  }
+
+  return res.status(200).json({
+    valid: true,
+    query: trimmedQuery
+  });
 });
 
 // Central error handler
