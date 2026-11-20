@@ -26,13 +26,12 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-app.post('/api/validate-query', (req, res) => {
-  const { query } = req.body || {};
-  if (typeof query !== 'string' || query.trim().length < 1 || query.trim().length > 499) {
-    return res.status(400).json({ valid: false, message: 'Invalid query' });
-  }
-  return res.status(200).json({ valid: true, query: query.trim() });
-});   
+// Central error handler
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({
+    error: err.message || 'Internal Server Error'
+  });
 });
 
 module.exports = app;
